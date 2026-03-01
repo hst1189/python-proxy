@@ -15,17 +15,18 @@ import subprocess
 from aiohttp import web
 
 # 环境变量
-UUID = os.environ.get('UUID', '7bd180e8-1142-4387-93f5-03e8d750a896')   # 节点UUID
 NEZHA_SERVER = os.environ.get('NEZHA_SERVER', '')    # 哪吒v0填写格式: nezha.xxx.com  哪吒v1填写格式: nezha.xxx.com:8008
 NEZHA_PORT = os.environ.get('NEZHA_PORT', '')        # 哪吒v1请留空，哪吒v0 agent端口
 NEZHA_KEY = os.environ.get('NEZHA_KEY', '')          # 哪吒v0或v1密钥，哪吒面板后台命令里获取
-DOMAIN = os.environ.get('DOMAIN', '')                # 项目分配的域名或反代后的域名,不包含https://前缀,例如: domain.xxx.com
-SUB_PATH = os.environ.get('SUB_PATH', 'sub')         # 节点订阅token
-NAME = os.environ.get('NAME', '')                    # 节点名称
+
+UUID = os.environ.get('UUID', '8cda8d90-9c66-4f59-8f98-d433d6238a8c')   # 节点UUID
 WSPATH = os.environ.get('WSPATH', UUID[:8])          # 节点路径
-PORT = int(os.environ.get('SERVER_PORT') or os.environ.get('PORT') or 3000)  # http和ws端口，默认自动优先获取容器分配的端口
-AUTO_ACCESS = os.environ.get('AUTO_ACCESS', '').lower() == 'true' # 自动访问保活,默认关闭,true开启,false关闭,需同时填写DOMAIN变量
-DEBUG = os.environ.get('DEBUG', '').lower() == 'true' # 保持默认,调试使用,true开启调试
+DOMAIN = os.environ.get('DOMAIN', '')                # 项目分配的域名或反代后的域名,不包含https://前缀,例如: domain.xxx.com
+SUB_PATH = os.environ.get('SUB_PATH', '8cda8d90-9c66-4f59-8f98-d433d6238a8c')         # 节点订阅token
+NAME = os.environ.get('NAME', '')                    # 节点名称
+PORT = int(os.environ.get('SERVER_PORT') or os.environ.get('PORT') or 7860)  # http和ws端口，默认自动优先获取容器分配的端口
+AUTO_ACCESS = os.environ.get('AUTO_ACCESS', '').lower() == 'false' # 自动访问保活,默认关闭,true开启,false关闭,需同时填写DOMAIN变量
+DEBUG = os.environ.get('DEBUG', '').lower() == 'false' # 保持默认,调试使用,true开启调试
 
 # 全局变量
 CurrentDomain = DOMAIN
@@ -36,8 +37,8 @@ ISP = ''
 # dns server
 DNS_SERVERS = ['8.8.4.4', '1.1.1.1']
 BLOCKED_DOMAINS = [
-    'speedtest.net', 'fast.com', 'speedtest.cn', 'speed.cloudflare.com', 'speedof.me',
-    'testmy.net', 'bandwidth.place', 'speed.io', 'librespeed.org', 'speedcheck.org'
+  'speedtest.net', 'fast.com', 'speedtest.cn', 'speed.cloudflare.com', 'speedof.me',
+  'testmy.net', 'bandwidth.place', 'speed.io', 'librespeed.org', 'speedcheck.org'
 ]
 
 # 日志级别
@@ -535,6 +536,9 @@ async def http_handler(request):
     
     return web.Response(status=404, text='Not Found\n')
 
+
+# ****** nezha ******
+# 下载nezha
 def get_download_url():
     import platform
     arch = platform.machine()
@@ -567,6 +571,8 @@ async def download_file():
     except Exception as e:
         logger.error(f'Download failed: {e}')
 
+
+# 运行nezha
 async def run_nezha():
     try:
         result = subprocess.run(['ps', 'aux'], capture_output=True, text=True)
@@ -580,7 +586,7 @@ async def run_nezha():
     await download_file()
     
     command = ''
-    tls_ports = ['443', '8443', '2096', '2087', '2083', '2053']
+    tls_ports = ['443', '8443', '2053', '2083', '2087', '2096']
     if NEZHA_SERVER and NEZHA_PORT and NEZHA_KEY:
         nezha_tls = '--tls' if NEZHA_PORT in tls_ports else ''
         command = f'nohup ./npm -s {NEZHA_SERVER}:{NEZHA_PORT} -p {NEZHA_KEY} {nezha_tls} --disable-auto-update --report-delay 4 --skip-conn --skip-procs >/dev/null 2>&1 &'
