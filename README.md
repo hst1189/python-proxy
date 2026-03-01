@@ -16,11 +16,10 @@
   | PORT         | 否 |        |节点监听端口,默认自动获取分配的端口  
   | NAME         | 否 |        |节点名称前缀，例如：koyeb |
   | DOMAIN       | 是 |        |项目分配的域名或已反代的域名，不包括https://前缀  |
-  | SUB_PATH     | 否 |  sub   |订阅token    |
+  | SUB_PATH     | 否 |  sub   |域名/${SUB_APTH}查看节点信息，非标端口，  域名:端口/${SUB_APTH} ，  未设置默认为sub |
   | AUTO_ACCESS  | 否 |  false |是否开启自动访问保活,false为关闭,true为开启,需同时填写DOMAIN变量 |
   | DEBUG        | 否 |  false |调试模式，默认关闭，true开启                   |
 
-* 域名/${SUB_APTH}查看节点信息，非标端口，域名:端口/${SUB_APTH}  SUB_APTH为自行设置的订阅token，未设置默认为sub
 
 > [!TIP]
 > python混肴地址：https://freecodingtools.org/tools/obfuscator/python
